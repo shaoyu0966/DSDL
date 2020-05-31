@@ -46,23 +46,23 @@ module mult_tb();
 	// clock cycle = 10 ticks
 	reg clock = 1;
 	always
-		#5 clock <= ~clock;
+		#4 clock <= ~clock;				// modified: 5 -> 4 (half a clock cycle)
 	// multiplier
 	reg[3:0] A, B;
 	wire[7:0] P;
 	reg[7:0] P_ref;
 	mult_fast mult(P, A, B, clock);
 	always @(posedge clock)
-		P_ref <= #20 A*B;
+		P_ref <= #16 A*B;				// modified: 20 -> 16 (2 clock cycles)
 	// loop through all possible inputs
 	integer i;
 	initial begin
-		#9;
+		#7;								// modified : 9 -> 7 (clock cycle - 1)
 		for(i=0; i<256; i=i+1) begin
 			{A, B} <= i;
-			#10;
+			#8;							// modified: 10 -> 8 (1 clock cycle)
 		end
-		#21 $finish;
+		#23 $finish;					// modified: 21 -> 23
 	end
 	// check if the products are correct
 	reg[3:0] A_old, B_old;
@@ -74,7 +74,16 @@ module mult_tb();
 			$display("Product is wrong when A=%b, B=%b.", A_old, B_old);
 			$display("P_ref: %b.", P_ref);
 			$display("P    : %b.", P);
-			#9 $finish;
+			// #9 $finish;
 		end
+		// // Print correct message
+		// else if(i>=2) begin
+		// 	A_old = (i-2)/16;
+		// 	B_old = (i-2)%16;
+		// 	$display("Correct when A=%b, B=%b.", A_old, B_old);
+		// 	$display("i=%b", i);
+		// 	$display("P_ref: %b.", P_ref);
+		// 	$display("P    : %b.", P);
+		// end
 	end
 endmodule
