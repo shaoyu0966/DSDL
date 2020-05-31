@@ -17,22 +17,22 @@ module mult_fast(
 	wire[6:3] pp3 = a_s0 & {4{b_s0[3]}}; // ignore the delays of AND gates
 	reg[5:1] sum1;
 	always @(pp0, pp1)
-		sum1[5:1] <= #7 pp0[<index>] + pp1[<index>]; // delay of the 4-bit adder
+		sum1[5:1] <= #7 pp0[3:1] + pp1[4:1]; // delay of the 4-bit adder
 	reg[7:3] sum3;
 	always @(pp2, pp3)
-		sum3[7:3] <= #7 pp2[<index>] + pp3[<index>]; // delay of the 4-bit adder
+		sum3[7:3] <= #7 pp2[5:3] + pp3[6:3]; // delay of the 4-bit adder
 	reg[5:0] sum1_s1;
 	reg[7:2] sum3_s1;
 	always @(posedge clk) begin
-		sum1_s1 <= {sum1, pp0[<index>]};
-		sum3_s1 <= {sum3, pp2[<index>]};
+		sum1_s1 <= {sum1, pp0[0]};
+		sum3_s1 <= {sum3, pp2[2]};
 	end
 	// stage 2 (outout)
 	reg[7:2] sum2;
 	always @(sum1_s1, sum3_s1)
-		sum2[7:2] <= #8 sum1_s1[<index>] + sum3_s1[<index>]; // delay of the 6-bit adder
+		sum2[7:2] <= #8 sum1_s1[5:2] + sum3_s1[7:2]; // delay of the 6-bit adder
 	always @(posedge clk) begin
-		P <= {sum2, sum1_s1[<index>]};
+		P <= {sum2, sum1_s1[1:0]};
 	end
 endmodule
 
